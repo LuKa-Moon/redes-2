@@ -213,7 +213,6 @@ void gera_tabela_servs(int n) {
     printf(CABECALHO);
     printf(LINHA_HORIZONTAL);
 
-    // Ainda não sei qual como vão ser escolhidas as portas
     for(int i = 1; i < n; i++) {
         printf("| %3d | 0000     | 127.0.1.1       | %5d | UP     |\n",
                    i,                             i + 8500);
