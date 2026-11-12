@@ -28,7 +28,12 @@ void serv_trata_mensagem(char *mensagem) {
     */
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    // Verifica uso correto
+    if(argc != 2) {
+        fprintf(stderr, "Uso correto: %s <nome_tabela_servs>\n", argv[0]);
+        return ERROR;
+    } 
 
     // Inicializa variáveis para poder usar
     // mantem_ate_SIGINT, que permite encerrar graciosamente com ^C
@@ -37,6 +42,9 @@ int main() {
     // Definem nomes para impressão no log
     cli_define_nome("Load Balancer");
     serv_define_nome("Load Balancer");
+
+    // Define o nome do arquivo que será usado pelo tabela servs
+    define_nome_arq_tabela("servs.tab");
 
     return serv_escuta(LB_PORTA_ESCUTA);
 }

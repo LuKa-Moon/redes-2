@@ -3,8 +3,6 @@
 #include <string.h>
 #include "../headers/tabela_servs.h"
 
-#define NOME_ARQ_TABELA "servs.tab"
-
 #define TAB_NUM_SERVS              48
 #define TAB_TOTAL_CONEX            47
 #define TAB_ID                      2
@@ -25,6 +23,8 @@
 | 000 | 0000     | 111.111.111.111 | 00000 | DOWN   |
 -----------------------------------------------------
 */
+
+char *NOME_ARQ_TABELA;
 
 /* FUNÇÕES INTERNAS */
 
@@ -85,6 +85,10 @@ Serv_Dados get_dados_serv_interna(char *linha) {
 }
 
 /* FUNÇÕES EXTERNAS */
+
+void define_nome_arq_tabela(char *nome) {
+    NOME_ARQ_TABELA = nome;
+}
 
 int get_quant_servs() {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");

@@ -1,7 +1,7 @@
 CFLAGS = -g -Wall
 CC = gcc 
 
-all: cliente servidor
+all: cliente servidor lb
 
 cliente: objs/cliente.o objs/continua.o  objs/cliente_main.o
 	$(CC) -o cliente objs/cliente.o objs/continua.o  objs/cliente_main.o

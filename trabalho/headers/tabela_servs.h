@@ -1,4 +1,5 @@
 #ifndef __TABELA_SERVS__
+#define __TABELA_SERVS__
 
 typedef enum status_e {UP, DOWN} Status;
 
@@ -9,6 +10,10 @@ typedef struct dado_tabela_servidores {
     Status status;          // UP (tudo certo) ou DOWN (falhou)
 
 } Serv_Dados;
+
+// CHAMAR
+// Informa qual arquivo deve ser lido e modificado como tabela
+void define_nome_arq_tabela(char *nome);
 
 // Informa a quantidade de servidores 
 int get_quant_servs();
@@ -45,5 +50,4 @@ void gera_tabela_servs(int n);
 // Desaloca as string de host e porta
 void desaloca_dado(Serv_Dados);
 
-#define __TABELA_SERVS__
 #endif
