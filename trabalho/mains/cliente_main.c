@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
     char *cli_nome = malloc(sizeof(char) * TAM_MAX);
     char *resposta = malloc(sizeof(char) * TAM_MAX);
     sprintf(cli_nome, "Cliente %d", id);
-    define_nome(cli_nome);
+    cli_define_nome(cli_nome);
     
     continua_ini();
 
