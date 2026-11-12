@@ -3,16 +3,16 @@ CC = gcc
 
 all: cliente servidor lb
 
-cliente: objs/cliente.o objs/continua.o  objs/cliente_main.o
+cliente: headers/defs.h objs/cliente.o objs/continua.o  objs/cliente_main.o
 	$(CC) -o cliente objs/cliente.o objs/continua.o  objs/cliente_main.o
 
-servidor: objs/servidor.o objs/continua.o objs/servidor_main.o
+servidor: headers/defs.h objs/servidor.o objs/continua.o objs/servidor_main.o
 	$(CC) -o servidor objs/servidor.o objs/continua.o objs/servidor_main.o
 
-lb: objs/cliente.o objs/servidor.o objs/continua.o objs/lb_main.o objs/tabela_servs.o
+lb: headers/defs.h objs/cliente.o objs/servidor.o objs/continua.o objs/lb_main.o objs/tabela_servs.o
 	$(CC) -o lb objs/cliente.o objs/servidor.o objs/continua.o objs/lb_main.o objs/tabela_servs.o
 
-teste_tab: objs/teste_tab.o objs/tabela_servs.o
+teste_tab: headers/defs.h objs/teste_tab.o objs/tabela_servs.o
 	$(CC) -o teste_tab objs/teste_tab.o objs/tabela_servs.o
 
 
