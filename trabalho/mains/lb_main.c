@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "../headers/cliente.h"      //Para se comunicar com os servidores
 #include "../headers/continua.h"
 #include "../headers/defs.h"
@@ -27,19 +28,15 @@ void serv_trata_mensagem(char *mensagem) {
     */
 }
 
-int main(int argc, char *argv[]) {
-    if(argc != 2) {
-        fprintf(stderr, "Uso correto: %s <porta>\n", argv[0]);
-        return ERROR;
-    }
+int main() {
 
     // Inicializa variáveis para poder usar
     // mantem_ate_SIGINT, que permite encerrar graciosamente com ^C
     continua_ini();
 
     // Definem nomes para impressão no log
-    cli_define_nome("Load Balancer\n");
-    serv_define_nome("Load_Balancer\n");
+    cli_define_nome("Load Balancer");
+    serv_define_nome("Load Balancer");
 
-    return serv_escuta(argv[1]);
+    return serv_escuta(LB_PORTA_ESCUTA);
 }
