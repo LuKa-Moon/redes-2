@@ -9,8 +9,8 @@ cliente: objs/cliente.o objs/continua.o  objs/cliente_main.o
 servidor: objs/servidor.o objs/continua.o objs/servidor_main.o
 	$(CC) -o servidor objs/servidor.o objs/continua.o objs/servidor_main.o
 
-lb: objs/cliente.o objs/servidor.o objs/continua.o objs/servidor_main.o
-	$(CC) -o lb objs/cliente.o objs/servidor.o objs/continua.o objs/servidor_main.o
+lb: objs/cliente.o objs/servidor.o objs/continua.o objs/servidor_main.o objs/tabela_servs.o
+	$(CC) -o lb objs/cliente.o objs/servidor.o objs/continua.o objs/servidor_main.o objs/tabela_servs.o
 
 teste_tab: objs/teste_tab.o objs/tabela_servs.o
 	$(CC) -o teste_tab objs/teste_tab.o objs/tabela_servs.o
