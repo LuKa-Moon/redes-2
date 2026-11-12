@@ -10,6 +10,9 @@ typedef struct dado_tabela_servidores {
 
 } Serv_Dados;
 
+// Informa a quantidade de servidores 
+int get_quant_servs();
+
 // Informa o total de conexões abertas
 int get_total_conexoes();
 
@@ -36,8 +39,11 @@ void decrementa_conexoes(int id);
 // Faz conexoes == 0 no servidor
 void reseta_conexoes(int id);
 
-// Gera uma tabela de servidores de tamanho n
+// Gera uma tabela de servidores de tamanho n no stdout
 void gera_tabela_servs(int n);
+
+// Desaloca as string de host e porta
+void desaloca_dado(Serv_Dados);
 
 #define __TABELA_SERVS__
 #endif

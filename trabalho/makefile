@@ -12,6 +12,9 @@ servidor: objs/servidor.o objs/continua.o objs/servidor_main.o
 lb: objs/cliente.o objs/servidor.o objs/continua.o objs/servidor_main.o
 	$(CC) -o lb objs/cliente.o objs/servidor.o objs/continua.o objs/servidor_main.o
 
+teste_tab: objs/teste_tab.o objs/tabela_servs.o
+	$(CC) -o teste_tab objs/teste_tab.o objs/tabela_servs.o
+
 
 # Compilando mains
 objs/cliente_main.o: mains/cliente_main.c
@@ -23,6 +26,8 @@ objs/servidor_main.o: mains/servidor_main.c
 objs/lb_main.o: mains/lb_main.c
 	$(CC) -c $(CFLAGS) -o objs/lb_main.o mains/lb_main.c
 
+objs/teste_tab.o: mains/teste_tab.c
+	$(CC) -c $(CFLAGS) -o objs/teste_tab.o mains/teste_tab.c
 
 
 # Compilando srcs
@@ -34,6 +39,9 @@ objs/continua.o: headers/continua.h srcs/continua.c
 
 objs/servidor.o: headers/servidor.h srcs/servidor.c
 	$(CC) -c $(CFLAGS) -o objs/servidor.o srcs/servidor.c
+
+objs/tabela_servs.o: headers/tabela_servs.h srcs/tabela_servs.c
+	$(CC) -c $(CFLAGS) -o objs/tabela_servs.o srcs/tabela_servs.c
 
 clean:
 	-rm -f objs/*.o
