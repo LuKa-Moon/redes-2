@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 
     char *serv_nome = malloc(sizeof(char) * TAM_MAX);
     sprintf(serv_nome, "Servidor %d", id);
-    define_nome(serv_nome);
+    serv_define_nome(serv_nome);
 
     continua_ini();
     
