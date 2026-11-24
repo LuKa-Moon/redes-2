@@ -142,6 +142,26 @@ Serv_Dados melhor_serv(int (*comp)(Serv_Dados x1, Serv_Dados x2)) {
     return melhor;
 }
 
+void status_serv_down(int id) {
+    FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+
+    acha_linha(tabela, id);
+    fseek(tabela, TAB_STATUS, SEEK_CUR);
+    fprintf(tabela, "DOWN");
+
+    fclose(tabela);
+}
+
+void status_serv_up(int id) {
+    FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+
+    acha_linha(tabela, id);
+    fseek(tabela, TAB_STATUS, SEEK_CUR);
+    fprintf(tabela, "UP  ");
+
+    fclose(tabela);
+}
+
 void flip_status_serv(int id) {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
     char *linha = le_linha(tabela, id);

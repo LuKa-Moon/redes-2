@@ -32,8 +32,11 @@ Serv_Dados get_dados_serv(int id);
 //      retorno = 0 -> tanto faz.
 Serv_Dados melhor_serv(int (*comp)(Serv_Dados x1, Serv_Dados x2));
 
-// Flipa o status do servidor
-void flip_status_serv(int id);
+// Muda o status do servidor para DOWN
+void status_serv_down(int id);
+
+// Muda o status do servidor para UP
+void status_serv_up(int id);
 
 // Faz conexoes++ no servidor
 void incrementa_conexoes(int id);
