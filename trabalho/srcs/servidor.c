@@ -96,6 +96,7 @@ int serv_escuta(char *porta) {
         if(garfo < 0)
             return ERROR;
         if(garfo == 0) {
+            close(sockfd);
             trata_conexao();
             exit(0);
         }  
