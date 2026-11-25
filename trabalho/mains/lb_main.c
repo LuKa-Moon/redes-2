@@ -7,6 +7,8 @@
 #include "../headers/servidor.h"     //Para se comunicar com os clientes
 #include "../headers/tabela_servs.h"
 
+int (*COMPARACAO_SERVS)(Serv_Dados x1, Serv_Dados x2) = NULL;
+
 int serv_continua() {
     return mantem_ate_SIGINT();
 }
@@ -26,6 +28,21 @@ void serv_trata_mensagem(char *mensagem) {
      * (iniciar e encerrar a conexão)
      * Enviar o retorno para o cliente com a função serv_responde
     */
+
+    // Escolhendo o servidor com base em COMPARACAO_SERVS
+    Serv_Dados sd = melhor_serv(COMPARACAO_SERVS);
+    /*
+    // o melhor servidor pode estar desativado
+    enquanto(sd.status == DOWN && tem_servidores_ativos() && mantem_ate_SIGINT())
+        status_serv_down(sd.id);
+        desaloca o dado e tenta denovo
+
+    // achou o servidor
+    cli_cria_conexao()
+    cli_envia_mensagem(mensagem, resposta) <- alocar resposta
+    cli_encerra_conexao()
+    serv_responde(resposta)
+    */   
 }
 
 int main(int argc, char *argv[]) {
@@ -45,6 +62,10 @@ int main(int argc, char *argv[]) {
 
     // Define o nome do arquivo que será usado pelo tabela servs
     define_nome_arq_tabela("servs.tab");
+
+    // Escolher funcao de comparacao de servs
+    // Sugiro passar por argv
+    // COMPARACAO_SERVS = <funcao escolhida>
 
     return serv_escuta(LB_PORTA_ESCUTA);
 }

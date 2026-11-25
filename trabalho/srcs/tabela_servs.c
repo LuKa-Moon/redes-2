@@ -106,11 +106,26 @@ int get_total_conexoes() {
     return total;
 }
 
+int tem_servidores_ativos() {
+    FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+
+    int n = get_quant_servs_interna(tabela);
+    
+    for(int i = 1; i <= n; i++) {
+        char *linha = le_linha(tabela, 1);
+        if(pega_status(linha) == UP) {
+            free(linha);
+            return 1;
+        }
+        free(linha);
+    }
+    return 0;
+}
+
 Serv_Dados get_dados_serv(int id) {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
 
     char *linha = le_linha(tabela, id);
-    printf("%s", linha);
 
     Serv_Dados sd = get_dados_serv_interna(linha);
 
@@ -229,18 +244,21 @@ void gera_tabela_servs(int n) {
 | 000 | 0000     | 111.111.111.111 | 00000 | DOWN   |
 -----------------------------------------------------
 */
-    printf(LINHA_HORIZONTAL);
-    printf(CAMPO_NUM_SERVS);
-    printf("%3d |\n", n);
-    printf(LINHA_QUANT_CONECT);
-    printf(LINHA_HORIZONTAL);
-    printf(CABECALHO);
-    printf(LINHA_HORIZONTAL);
+    FILE *saida = fopen(NOME_ARQ_TABELA, "w");
 
-    for(int i = 1; i < n; i++) {
-        printf("| %3d | 0000     | 127.0.1.1       | %5d | UP     |\n",
-                   i,                             i + 8500);
+    fprintf(saida, LINHA_HORIZONTAL);
+    fprintf(saida, CAMPO_NUM_SERVS);
+    fprintf(saida, "%3d |\n", n);
+    fprintf(saida, LINHA_QUANT_CONECT);
+    fprintf(saida, LINHA_HORIZONTAL);
+    fprintf(saida, CABECALHO);
+    fprintf(saida, LINHA_HORIZONTAL);
+
+    for(int i = 1; i <= n; i++) {
+        fprintf(saida, "| %3d | 0000     | 127.0.1.1       | %5d | UP     |\n",
+                           i,                             i + 8500);
     }
     
-    printf(LINHA_HORIZONTAL);
+    fprintf(saida, LINHA_HORIZONTAL);
+    fclose(saida);
 }

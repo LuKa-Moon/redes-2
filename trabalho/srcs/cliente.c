@@ -73,6 +73,8 @@ int cli_envia_mensagem(char *envio, char *resposta) {
     if(send(sockfd, buffer, TAM_MAX, 0) == ERROR)
         return ERROR;
 
+    buffer[0] = 0;
+
     // Recebe resposta do servidor
     if(recv(sockfd, buffer, TAM_MAX, 0) == ERROR)
         return ERROR;

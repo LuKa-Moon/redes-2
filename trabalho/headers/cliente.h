@@ -6,7 +6,7 @@
 // Retorna ERROR (-1) ou NOERROR (0)
 int cli_cria_conexao(char *host, char *porta);
 
-// Chamar após enviar tidas as mensagens
+// Chamar após enviar todas as mensagens
 // Retorna ERROR (-1) ou NOERROR (0)
 void cli_encerra_conexao();
 

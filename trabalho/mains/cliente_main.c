@@ -35,7 +35,6 @@ int main(int argc, char **argv) {
         sleep(rand() % SONO);
 
         cli_encerra_conexao();
-        printf("\n");
     }
     free(cli_nome);
     free(resposta);

@@ -1,7 +1,7 @@
 CFLAGS = -g -Wall
 CC = gcc 
 
-all: cliente servidor lb
+all: cliente servidor lb maestro
 
 cliente: headers/defs.h objs/cliente.o objs/continua.o  objs/cliente_main.o
 	$(CC) -o cliente objs/cliente.o objs/continua.o  objs/cliente_main.o
@@ -11,6 +11,9 @@ servidor: headers/defs.h objs/servidor.o objs/continua.o objs/servidor_main.o
 
 lb: headers/defs.h objs/cliente.o objs/servidor.o objs/continua.o objs/lb_main.o objs/tabela_servs.o
 	$(CC) -o lb objs/cliente.o objs/servidor.o objs/continua.o objs/lb_main.o objs/tabela_servs.o
+
+maestro: objs/maestro_main.o objs/continua.o objs/tabela_servs.o 
+	$(CC) -o maestro objs/maestro_main.o objs/continua.o objs/tabela_servs.o
 
 teste_tab: headers/defs.h objs/teste_tab.o objs/tabela_servs.o
 	$(CC) -o teste_tab objs/teste_tab.o objs/tabela_servs.o
@@ -25,6 +28,9 @@ objs/servidor_main.o: mains/servidor_main.c
 
 objs/lb_main.o: mains/lb_main.c
 	$(CC) -c $(CFLAGS) -o objs/lb_main.o mains/lb_main.c
+
+objs/maestro_main.o: mains/maestro_main.c
+	$(CC) -c $(CFLAGS) -o objs/maestro_main.o mains/maestro_main.c
 
 objs/teste_tab.o: mains/teste_tab.c
 	$(CC) -c $(CFLAGS) -o objs/teste_tab.o mains/teste_tab.c
@@ -47,4 +53,4 @@ clean:
 	-rm -f objs/*.o
 
 purge: clean
-	-rm -f cliente servidor lb teste_tab 
+	-rm -f cliente servidor lb teste_tab maestro

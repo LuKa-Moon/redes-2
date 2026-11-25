@@ -21,6 +21,10 @@ int get_quant_servs();
 // Informa o total de conexões abertas
 int get_total_conexoes();
 
+// Retorna 0 se todos os servidores estão em DOWN
+// Retorna 1 caso contrário
+int tem_servidores_ativos();
+
 // Lê os dados de um servidor
 Serv_Dados get_dados_serv(int id);
 
@@ -47,10 +51,10 @@ void decrementa_conexoes(int id);
 // Faz conexoes == 0 no servidor
 void reseta_conexoes(int id);
 
-// Gera uma tabela de servidores de tamanho n no stdout
+// Gera uma tabela de servidores de tamanho n
 void gera_tabela_servs(int n);
 
 // Desaloca as string de host e porta
-void desaloca_dado(Serv_Dados);
+void desaloca_dado(Serv_Dados sd);
 
 #endif
