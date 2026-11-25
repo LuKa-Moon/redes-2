@@ -56,7 +56,9 @@ int main(int argc, char *argv[]) {
         return ERROR;
     }
 
-    serv_define_nome("Load Balancer");
+    serv_define_nome("LB for cli");
+    cli_define_nome("LB for serv");
+
 //-------------------------------------------------------------------------------------------------
 //INICIA O LOOP PRINCIPAL DO LOAD BALANCER---------------------------------------------------------
     // mantem_ate_SIGINT, que permite encerrar graciosamente com ^C
@@ -67,9 +69,6 @@ int main(int argc, char *argv[]) {
 
     // Inicializa variáveis para poder usar
     // mantem_ate_SIGINT, que permite encerrar graciosamente com ^C
-
-    // Definem nomes para impressão no log
-    cli_define_nome("Load Balancer");
 
     // Define o nome do arquivo que será usado pelo tabela servs
     //define_nome_arq_tabela("servs.tab");
