@@ -9,6 +9,7 @@
 #include "../headers/defs.h"
 #include "../headers/servidor.h"
 #include "../headers/continua.h"
+#include "../headers/cliente.h"
 
 char *serv_nome;
 
@@ -96,11 +97,20 @@ int serv_mantem_conexao(char *mensagem) {
     return 1; // Retorna 1 para manter a conexão
 }
 
-void trata_conexao(int clientfd) {
+void trata_conexao(int clientfd, int servfd){
     char *buffer = malloc(sizeof(char) * TAM_MAX);
     if(buffer == NULL) {
         fprintf(stderr, "trata_conexao malloc\n");
         close(clientfd);
+        close(servfd);
+        return;
+    }
+    char *buffer_R = malloc(sizeof(char) * TAM_MAX);
+    if(buffer_R == NULL){
+        fprintf(stderr, "trata_conexao mallocR\n");
+        close(clientfd);
+        close(servfd);
+        free(buffer);
         return;
     }
 
@@ -108,6 +118,7 @@ void trata_conexao(int clientfd) {
     do {
         // Recebe dados do cliente
         memset(buffer, 0, TAM_MAX);
+        memset(buffer_R, 0, TAM_MAX);
         bytes_recebidos = recv(clientfd, buffer, TAM_MAX - 1, 0);
         if(bytes_recebidos < 0) {
             // FAZER TRATAMENTO DE ERRO AQUI
@@ -120,19 +131,27 @@ void trata_conexao(int clientfd) {
         }
 
         buffer[strcspn(buffer, "\r\n")] = '\0';
-        printf("    [%s] Mensagem recebida: [%s]\n", serv_nome, buffer);
+        printf("    [%s] Mensagem recebida do cliente: [%s]\n", serv_nome, buffer);
         serv_trata_mensagem(buffer);
+
+        cli_envia_mensagem(servfd, buffer, buffer_R);
+
+        serv_responde(clientfd, buffer_R);
+
     } while(serv_continua() && serv_mantem_conexao(buffer));
 
     printf("    [%s] Conexão finalizada\n", serv_nome);
     free(buffer);
+    free(buffer_R);
     close(clientfd);
+    cli_encerra_conexao(servfd);
 }
 
 void lb_loop_principal(int sockfd, Serv_Dados *srvs, int servidores, Politica pl) {
     struct sockaddr_in cli_addr;  // Estrutura para armazenar o endereço do cliente
     socklen_t cli_len;  // Tamanho da estrutura do endereço do cliente
     int clientfd,  // Descritor do socket de conexão com cliente
+        servfd,    // Descritor do socket de conexão com servidor
         sevidor_selecionado;  // ID do servidor selecionado
     
 
@@ -160,7 +179,8 @@ void lb_loop_principal(int sockfd, Serv_Dados *srvs, int servidores, Politica pl
 
         printf("    [%s] Servidor selecionado: %d\n", serv_nome, sevidor_selecionado);
 
-        trata_conexao(clientfd);
+        servfd = cli_cria_conexao(srvs->host, srvs->porta);
+        trata_conexao(clientfd, servfd);
     }
 }
 
@@ -170,7 +190,9 @@ void serv_responde(int clientfd, char *resposta) {
     // Envia a mensagem de resposta
 
     char *buffer = malloc(sizeof(char) * TAM_MAX);
-    memcpy(buffer, resposta, TAM_MAX);
+    memcpy(buffer, resposta, strlen(resposta));
+
+    printf("clientfd = %d\n", clientfd);
     send(clientfd, buffer, strlen(buffer), 0);
     
     printf("    [%s] Resposta enviada: [%s]\n", serv_nome, resposta);
