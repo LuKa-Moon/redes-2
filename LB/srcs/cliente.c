@@ -9,7 +9,6 @@
 #include "../headers/defs.h"
 #include "../headers/cliente.h"
 
-int sockfd;             // Descritor do socket
 char *cli_nome;
 
 void cli_define_nome(char *nome) {
@@ -34,7 +33,7 @@ int cli_cria_conexao(char *host, char *porta) {
     }
 
     // Cria socket TCP
-    sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    int sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (sockfd < 0) {
         fprintf(stderr, "socket\n");
         freeaddrinfo(res);
@@ -53,29 +52,39 @@ int cli_cria_conexao(char *host, char *porta) {
     freeaddrinfo(res);
 
     printf("[%s] Cliente conectado\n", cli_nome);
-    return NOERROR;
+    return sockfd;
 }
 
-void cli_encerra_conexao() {
+void cli_encerra_conexao(int sockfd) {
     // Fecha socket
     printf("[%s] Cliente encerrado\n", cli_nome);
     close(sockfd);
 }
 
-int cli_envia_mensagem(char *envio, char *resposta) {
+int cli_envia_mensagem(int sockfd, char *envio, char *resposta) {
     char *buffer = malloc(sizeof(char) * TAM_MAX);
+    int byte_recebido;
 
     // Lê mensagem do usuário
     printf("[%s] Enviou uma mensagem: [%s]\n", cli_nome, envio);
-    memcpy(buffer, envio, TAM_MAX);
+    memcpy(buffer, envio, strlen(envio));
 
     // Envia mensagem para o servidor
-    if(send(sockfd, buffer, TAM_MAX, 0) == ERROR)
+    printf("servfd = %d\n", sockfd);
+    if(send(sockfd, buffer, strlen(buffer), 0) == ERROR)
         return ERROR;
 
     // Recebe resposta do servidor
-    if(recv(sockfd, buffer, TAM_MAX, 0) == ERROR)
+    byte_recebido = recv(sockfd, buffer, TAM_MAX, 0);
+    if(byte_recebido < 0) {
+        // FAZER TRATAMENTO DE ERRO AQUI
+        fprintf(stderr, "trata_conexao recv\n");
         return ERROR;
+    }
+    else if(byte_recebido == 0) {
+        printf("    [%s] Conexão encerrada pelo cliente\n", cli_nome);
+        return ERROR;
+    }
 
     memcpy(resposta, buffer, TAM_MAX);
     free(buffer);
