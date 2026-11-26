@@ -61,23 +61,16 @@ int main(int argc, char *argv[]) {
 
 //-------------------------------------------------------------------------------------------------
 //INICIA O LOOP PRINCIPAL DO LOAD BALANCER---------------------------------------------------------
+    // Inicializa variáveis para poder usar
     // mantem_ate_SIGINT, que permite encerrar graciosamente com ^C
     continua_ini();
+
+    // Define o nome do arquivo que será usado pelo tabela servs
+    //define_nome_arq_tabela("servs.tab");  
+
     lb_loop_principal(lb_server, srvs, servidores, pl);  // Aceita conexões e trata mensagens
 
 //-------------------------------------------------------------------------------------------------
-
-    // Inicializa variáveis para poder usar
-    // mantem_ate_SIGINT, que permite encerrar graciosamente com ^C
-
-    // Define o nome do arquivo que será usado pelo tabela servs
-    //define_nome_arq_tabela("servs.tab");
-
-// Mantém o LB em execução
-while(serv_continua()) {
-    sleep(1);
-}
-
  
     free_todos_servs(srvs, servidores);
     if(fecha_socket(lb_server) < 0) {
