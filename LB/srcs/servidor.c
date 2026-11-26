@@ -91,7 +91,7 @@ void serv_trata_mensagem(char *mensagem) {
 }
 
 int serv_mantem_conexao(char *mensagem) {
-    if(mensagem == NULL || strlen(mensagem) == 0 || strcmp(mensagem, "exit") == 0) {
+    if(mensagem == NULL || strlen(mensagem) == 0 || strcmp(mensagem, "exit\n") == 0) {
         return 0; // Retorna 0 para cortar a conexão
     }
     return 1; // Retorna 1 para manter a conexão
@@ -130,12 +130,13 @@ void trata_conexao(int clientfd, int servfd){
             break;
         }
 
-        buffer[strcspn(buffer, "\r\n")] = '\0';
-        printf("    [%s] Mensagem recebida do cliente: [%s]\n", serv_nome, buffer);
+        //buffer[strcspn(buffer, "\r\n")] = '\0';       // remove newline character from the message
+        printf("    [%s] Mensagem recebida do cliente: %s", serv_nome, buffer);
         serv_trata_mensagem(buffer);
 
         cli_envia_mensagem(servfd, buffer, buffer_R);
 
+        //buffer_R[strcspn(buffer_R, "\r\n")] = '\0';   // remove newline character from the response
         serv_responde(clientfd, buffer_R);
 
     } while(serv_continua() && serv_mantem_conexao(buffer));
@@ -192,9 +193,8 @@ void serv_responde(int clientfd, char *resposta) {
     char *buffer = malloc(sizeof(char) * TAM_MAX);
     memcpy(buffer, resposta, strlen(resposta));
 
-    printf("clientfd = %d\n", clientfd);
     send(clientfd, buffer, strlen(buffer), 0);
     
-    printf("    [%s] Resposta enviada: [%s]\n", serv_nome, resposta);
+    printf("    [%s] Resposta enviada: %s", serv_nome, resposta);
     free(buffer);
 }
