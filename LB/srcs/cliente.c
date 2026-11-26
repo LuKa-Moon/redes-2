@@ -66,11 +66,10 @@ int cli_envia_mensagem(int sockfd, char *envio, char *resposta) {
     int byte_recebido;
 
     // Lê mensagem do usuário
-    printf("[%s] Enviou uma mensagem: [%s]\n", cli_nome, envio);
+    printf("    [%s] Enviou uma mensagem: %s", cli_nome, envio);
     memcpy(buffer, envio, strlen(envio));
 
     // Envia mensagem para o servidor
-    printf("servfd = %d\n", sockfd);
     if(send(sockfd, buffer, strlen(buffer), 0) == ERROR)
         return ERROR;
 
