@@ -134,10 +134,15 @@ void trata_conexao(int clientfd, int servfd){
         printf("    [%s] Mensagem recebida do cliente: %s", serv_nome, buffer);
         serv_trata_mensagem(buffer);
 
-        cli_envia_mensagem(servfd, buffer, buffer_R);
-
-        //buffer_R[strcspn(buffer_R, "\r\n")] = '\0';   // remove newline character from the response
-        serv_responde(clientfd, buffer_R);
+        if(cli_envia_mensagem(servfd, buffer, buffer_R) == ERROR){
+            // ERRO QUANDO HOUVER PROBLEMA COM SERVIDOR
+            printf("ERROR: cli_envia_mensagem\n");
+            serv_responde(clientfd, "Erro na comunicação com servidor\n");
+        }
+        else{
+            //buffer_R[strcspn(buffer_R, "\r\n")] = '\0';   // remove newline character from the response
+            serv_responde(clientfd, buffer_R);
+        }
 
     } while(serv_continua() && serv_mantem_conexao(buffer));
 
@@ -178,7 +183,7 @@ void lb_loop_principal(int sockfd, Serv_Dados *srvs, int servidores, Politica pl
             sevidor_selecionado = seleciona_LC(srvs, servidores);
         }
 
-        printf("    [%s] Servidor selecionado: %d\n", serv_nome, sevidor_selecionado);
+        printf("    [%s] Servidor selecionado: %d\n", serv_nome, srvs[sevidor_selecionado].id);
 
         servfd = cli_cria_conexao(srvs->host, srvs->porta);
         trata_conexao(clientfd, servfd);
@@ -192,6 +197,7 @@ void serv_responde(int clientfd, char *resposta) {
 
     char *buffer = malloc(sizeof(char) * TAM_MAX);
     memcpy(buffer, resposta, strlen(resposta));
+    buffer[strlen(resposta)] = '\n';
 
     send(clientfd, buffer, strlen(buffer), 0);
     
