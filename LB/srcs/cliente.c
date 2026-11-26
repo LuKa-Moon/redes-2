@@ -51,7 +51,7 @@ int cli_cria_conexao(char *host, char *porta) {
     // Libera memória da estrutura res
     freeaddrinfo(res);
 
-    printf("[%s] Cliente conectado\n", cli_nome);
+    printf("    [%s] Cliente conectado\n", cli_nome);
     return sockfd;
 }
 
@@ -63,11 +63,12 @@ void cli_encerra_conexao(int sockfd) {
 
 int cli_envia_mensagem(int sockfd, char *envio, char *resposta) {
     char *buffer = malloc(sizeof(char) * TAM_MAX);
-    int byte_recebido;
+    ssize_t byte_recebido;
 
     // Lê mensagem do usuário
     printf("    [%s] Enviou uma mensagem: %s", cli_nome, envio);
     memcpy(buffer, envio, strlen(envio));
+    buffer[strlen(envio)] = '\n';
 
     // Envia mensagem para o servidor
     if(send(sockfd, buffer, strlen(buffer), 0) == ERROR)
@@ -85,7 +86,7 @@ int cli_envia_mensagem(int sockfd, char *envio, char *resposta) {
         return ERROR;
     }
 
-    memcpy(resposta, buffer, TAM_MAX);
+    memcpy(resposta, buffer, byte_recebido);
     free(buffer);
     return NOERROR;
 }
