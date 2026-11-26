@@ -12,7 +12,7 @@ void cli_encerra_conexao();
 
 // Retorna ERROR (-1) se não enviou ou houve resposta (resposta == NULL) 
 // ou NOERROR (0) caso contrário
-int cli_envia_mensagem(char *envio, char *resposta);
+int cli_envia_mensagem(int sockfd, char *envio, char *resposta);
 
 // CHAMAR
 // Nome para ser usado no log
