@@ -13,6 +13,9 @@
 #define TAB_TAM_LINHA              54
 #define TAB_INI_DADOS               6
 
+#define ERROR -1
+#define NOERROR 0
+
 /*
 -----------------------------------------------------
 | Número de servidores:                         000 |
@@ -34,6 +37,10 @@ void acha_linha(FILE *tabela, int id) {
 
 char *le_linha(FILE *tabela, int id) {
     char *linha = malloc(sizeof(char) * (TAB_TAM_LINHA + 1));
+    if(linha == NULL){
+        printf("Erro na alocacao linha (le_linha)\n");
+        return NULL;
+    }
     linha[TAB_TAM_LINHA] = '\0';
 
     acha_linha(tabela, id);
@@ -56,6 +63,10 @@ char *pega_string(char *linha, int ini) {
     char *fim = strchr(linha, ' ');
     fim[0] = '\0';
     char *result = malloc(TAB_TAM_LINHA * sizeof(char));
+    if(result == NULL){
+        printf("Erro na alocacao resulta (pega_string)\n");
+        return NULL;
+    }
     strcpy(result, linha);
     fim[0] = ' ';
     return result;
@@ -79,7 +90,13 @@ Serv_Dados get_dados_serv_interna(char *linha) {
     sd.id = pega_num(linha, TAB_ID);
     sd.conexoes = pega_num(linha, TAB_CONEX);
     sd.host = pega_string(linha, TAB_HOST);
+    if(sd.host == NULL){
+        printf("ERROR: sd.host = NULL");
+    }
     sd.porta = pega_string(linha, TAB_PORTA);
+    if(sd.porta == NULL){
+        printf("ERROR: sd.porta = NULL");
+    }
     sd.status = pega_status(linha);
     return sd;
 }
@@ -92,6 +109,10 @@ void define_nome_arq_tabela(char *nome) {
 
 int get_quant_servs() {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+    if(tabela == NULL){ // verifica se abriu
+        fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
+        return NOERROR;
+    }
     int total = get_quant_servs_interna(tabela);
     fclose(tabela);
     return total;
@@ -99,6 +120,10 @@ int get_quant_servs() {
 
 int get_total_conexoes() {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+    if(tabela == NULL){ // verifica se abriu
+        fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
+        return NOERROR;
+    }
     int total;
     fseek(tabela,  2 * TAB_TAM_LINHA + TAB_TOTAL_CONEX, SEEK_SET);
     fscanf(tabela, "%d", &total);
@@ -108,33 +133,49 @@ int get_total_conexoes() {
 
 int tem_servidores_ativos() {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+    if(tabela == NULL){ // verifica se abriu
+        fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
+        return NOERROR;
+    }
 
     int n = get_quant_servs_interna(tabela);
     
     for(int i = 1; i <= n; i++) {
-        char *linha = le_linha(tabela, 1);
+        char *linha = le_linha(tabela, i);
         if(pega_status(linha) == UP) {
             free(linha);
+            fclose(tabela);
             return 1;
         }
         free(linha);
     }
+    fclose(tabela);
     return 0;
 }
 
 Serv_Dados get_dados_serv(int id) {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+    if(tabela == NULL){ // verifica se abriu
+        fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
+        return;
+    }
 
     char *linha = le_linha(tabela, id);
 
     Serv_Dados sd = get_dados_serv_interna(linha);
 
     fclose(tabela);
+    free(linha);
     return sd;
 }
 
 Serv_Dados melhor_serv(int (*comp)(Serv_Dados x1, Serv_Dados x2)) {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+    if(tabela == NULL){ // verifica se abriu
+        fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
+        return;
+    }
+
     char *linha = le_linha(tabela, 1);
     Serv_Dados melhor = get_dados_serv_interna(linha);
 
@@ -158,7 +199,16 @@ Serv_Dados melhor_serv(int (*comp)(Serv_Dados x1, Serv_Dados x2)) {
 }
 
 void status_serv_down(int id) {
+    if(id <= 0){
+        printf("id invalido (status_serv_down)\n");
+        return;
+    }
+
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+    if(tabela == NULL){ // verifica se abriu
+        fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
+        return;
+    }
 
     acha_linha(tabela, id);
     fseek(tabela, TAB_STATUS, SEEK_CUR);
@@ -169,6 +219,10 @@ void status_serv_down(int id) {
 
 void status_serv_up(int id) {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+    if(tabela == NULL){ // verifica se abriu
+        fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
+        return;
+    }
 
     acha_linha(tabela, id);
     fseek(tabela, TAB_STATUS, SEEK_CUR);
@@ -179,6 +233,10 @@ void status_serv_up(int id) {
 
 void flip_status_serv(int id) {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+    if(tabela == NULL){ // verifica se abriu
+        fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
+        return;
+    }
     char *linha = le_linha(tabela, id);
     Status status = pega_status(linha);
 
@@ -190,10 +248,15 @@ void flip_status_serv(int id) {
     else
         fprintf(tabela, "UP  ");
     fclose(tabela);
+    free(linha);
 }
 
 void incrementa_conexoes(int id) {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+    if(tabela == NULL){ // verifica se abriu
+        fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
+        return;
+    }
     char *linha = le_linha(tabela, id);
     int conex = pega_num(linha, TAB_CONEX);
 
@@ -202,10 +265,15 @@ void incrementa_conexoes(int id) {
     conex++;
     fprintf(tabela, "%04d", conex);
     fclose(tabela);
+    free(linha);
 }
 
 void decrementa_conexoes(int id) {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+    if(tabela == NULL){ // verifica se abriu
+        fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
+        return;
+    }
     char *linha = le_linha(tabela, id);
     int conex = pega_num(linha, TAB_CONEX);
 
@@ -214,10 +282,15 @@ void decrementa_conexoes(int id) {
     conex--;
     fprintf(tabela, "%04d", conex);
     fclose(tabela);
+    free(linha);    // libera linha
 }
 
 void reseta_conexoes(int id) {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
+    if(tabela == NULL){ // verifica se abriu
+        fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
+        return;
+    }
     acha_linha(tabela, id);
     fseek(tabela, TAB_CONEX, SEEK_CUR);
     fprintf(tabela, "0000");
@@ -245,6 +318,10 @@ void gera_tabela_servs(int n) {
 -----------------------------------------------------
 */
     FILE *saida = fopen(NOME_ARQ_TABELA, "w");
+    if(saida == NULL){  // verifica se abriu
+        fprintf(stderr, "Erro ao abrir o arquivo: %s\n", NOME_ARQ_TABELA);
+        return NOERROR;
+    }
 
     fprintf(saida, LINHA_HORIZONTAL);
     fprintf(saida, CAMPO_NUM_SERVS);
