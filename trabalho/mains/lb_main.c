@@ -9,6 +9,8 @@
 #include "../headers/lb.h"
 
 int (*COMPARACAO_SERVS)(Serv_Dados x1, Serv_Dados x2) = NULL;
+Politica pl;
+int servs_travados;
 
 int serv_continua() {
     return mantem_ate_SIGINT();
@@ -16,6 +18,15 @@ int serv_continua() {
 
 int serv_mantem_conexao(char *mensagem) {
     return 0;
+}
+
+void serv_inicia_conexao() {}
+
+void serv_finaliza_conexao() {
+    if(pl == RR) {
+        for(int i = 0; i < servs_travados; i++)
+            incrementa_RR(get_quant_servs());
+    }
 }
 
 void serv_trata_mensagem(char *mensagem) {
@@ -37,30 +48,52 @@ void serv_trata_mensagem(char *mensagem) {
     }
 
     Serv_Dados sd;
-    sd.id = -1; // Fazer retornar erro no primeiro status_serv_down
+    // sd.id = -1; // Fazer retornar erro no primeiro status_serv_down
 
-    do{
-        status_serv_down(sd.id);
-    // Escolhendo o servidor com base em COMPARACAO_SERVS
-    sd = melhor_serv(COMPARACAO_SERVS);
+    // do{
+    //     status_serv_down(sd.id);
+    // // Escolhendo o servidor com base em COMPARACAO_SERVS
+    // sd = melhor_serv(COMPARACAO_SERVS);
     
-    // o melhor servidor pode estar desativado
-    }while(sd.status == DOWN && mantem_ate_SIGINT());
+    // // o melhor servidor pode estar desativado
+    // }while(sd.status == DOWN && mantem_ate_SIGINT());
 /*
     // Trata do num em RR
     if(pl == RR){
         incrementa_RR(get_quant_servs());
     }
 */
-    // achou o servidor
-    cli_cria_conexao(sd.host, sd.porta);
     char *resposta = malloc(sizeof(char) * TAM_MAX);
     if(resposta == NULL){
         printf("Erro na alocação 'resposta'\n");
     }
 
-    cli_envia_mensagem(mensagem, resposta);
-    cli_encerra_conexao();
+    servs_travados = 0;
+    do {
+        // Escolhendo o servidor com base em COMPARACAO_SERVS
+        sd = melhor_serv(COMPARACAO_SERVS);
+
+        cli_cria_conexao(sd.host, sd.porta);
+        cli_envia_mensagem(mensagem, resposta);
+        cli_encerra_conexao();
+
+        if(strlen(resposta) == 0) {
+            status_serv_down(sd.id);
+            if(pl == RR) {
+                incrementa_RR(get_quant_servs());
+            }
+            servs_travados++;
+        }
+            
+    } while(strlen(resposta) == 0 && mantem_ate_SIGINT() && tem_servidores_ativos());
+    
+    // Verificar se tem servidores ativos antes de responder 
+    if(tem_servidores_ativos() == 0){
+        printf("Nenhum Servidor esta ativo\n");
+        return;
+    }
+
+    // achou o servidor
     serv_responde(resposta);   
 }
 
@@ -71,7 +104,7 @@ int main(int argc, char *argv[]) {
         return ERROR;
     } 
 
-    Politica pl = define_politica(argv[2]);
+    pl = define_politica(argv[2]);
     if(pl == PL_INVALIDA) {
         fprintf(stderr, "Uso correto: %s <nome_tabela_servs> tipo\n", argv[0]);
         return ERROR;
