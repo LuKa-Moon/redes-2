@@ -25,4 +25,12 @@ extern int serv_continua();
 // Deve retornar 0 para cortar a conexão com o cliente atual
 extern int serv_mantem_conexao(char *mensagem);
 
+// IMPLEMENTAR 
+// Função chamada antes do fork para atender o cliente
+extern void serv_inicia_conexao();
+
+// IMPLEMENTAR 
+// Função chamada depois do fork para atender o cliente
+extern void serv_finaliza_conexao();
+
 #endif

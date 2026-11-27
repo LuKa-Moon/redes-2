@@ -91,6 +91,7 @@ int serv_escuta(char *porta) {
         }
 
         printf("[%s] Cliente conectado.\n", serv_nome);
+        serv_inicia_conexao();
 
         int garfo = fork();
         if(garfo < 0)
@@ -100,6 +101,8 @@ int serv_escuta(char *porta) {
             trata_conexao();
             exit(0);
         }  
+
+        serv_finaliza_conexao();
         // Pai fecha conexão com o cliente
         close(connfd); 
     }

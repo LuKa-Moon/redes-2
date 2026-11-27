@@ -6,6 +6,9 @@
 #include "../headers/continua.h"
 #include "../headers/servidor.h"
 
+void serv_inicia_conexao() {}
+void serv_finaliza_conexao() {}
+
 int serv_continua() {
     return mantem_ate_SIGINT();
 }
