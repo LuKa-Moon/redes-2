@@ -11,9 +11,9 @@ typedef enum politica_e {
 
 Politica define_politica(const char *tipo);
 
-int seleciona_RR(Serv_Dados *srvs, int servidores);
+int seleciona_RR(Serv_Dados x1, Serv_Dados x2);
 
-int seleciona_LC(Serv_Dados *srvs, int servidores);
+int seleciona_LC(Serv_Dados x1, Serv_Dados x2);
 
 void incrementa_RR(int tam);
 
