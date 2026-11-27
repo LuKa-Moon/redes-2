@@ -64,6 +64,10 @@ void cli_encerra_conexao() {
 
 int cli_envia_mensagem(char *envio, char *resposta) {
     char *buffer = malloc(sizeof(char) * TAM_MAX);
+    if(buffer == NULL){
+        printf("Erro na alocacao buffer (cli_envia_mensagem)\n");
+        return ERROR;
+    }
 
     // Lê mensagem do usuário
     printf("[%s] Enviou uma mensagem: [%s]\n", cli_nome, envio);

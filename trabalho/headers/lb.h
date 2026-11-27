@@ -15,4 +15,6 @@ int seleciona_RR(Serv_Dados *srvs, int servidores);
 
 int seleciona_LC(Serv_Dados *srvs, int servidores);
 
+void incrementa_RR(int tam);
+
 #endif
