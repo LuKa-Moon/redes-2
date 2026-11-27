@@ -18,6 +18,10 @@ void serv_define_nome(char *nome) {
 
 void trata_conexao() {
     char *buffer = malloc(sizeof(char) * TAM_MAX);
+    if(buffer == NULL){
+        printf("Erro na alocacao buffer (trata_conexao)\n");
+        return;
+    }
     do {
         // Recebe dados do cliente
         memset(buffer, 0, TAM_MAX);
@@ -117,6 +121,10 @@ void serv_responde(char *resposta) {
     // Envia a mensagem de resposta
 
     char *buffer = malloc(sizeof(char) * TAM_MAX);
+    if(buffer == NULL){
+        printf("Erro na alocacao buffer (serv_responde)\n");
+        return;
+    }
     memcpy(buffer, resposta, TAM_MAX);
     send(connfd, buffer, TAM_MAX, 0);
     
