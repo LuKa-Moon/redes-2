@@ -5,6 +5,9 @@
 #include "../headers/defs.h"
 #include "../headers/continua.h"
 #include "../headers/servidor.h"
+#include "../headers/tabela_servs.h"
+
+int id;
 
 void serv_inicia_conexao() {}
 void serv_finaliza_conexao() {}
@@ -21,18 +24,20 @@ void serv_trata_mensagem(char *mensagem) {
     if(mensagem == NULL || strlen(mensagem) == 0)
         return;
 
+    incrementa_conexoes(id);
     sleep(rand() % SONO);
     extern char *serv_nome;
     serv_responde(serv_nome);
+    decrementa_conexoes(id);
 }
 
 int main(int argc, char **argv) {
     // Verifica uso correto
-    if(argc != 3) {
-        fprintf(stderr, "Uso correto: %s <id_serv> <porta>\n", argv[0]);
+    if(argc != 4) {
+        fprintf(stderr, "Uso correto: %s <id_serv> <porta> <tabela_servs>\n", argv[0]);
         return ERROR;
     }
-    int id = atoi(argv[1]);
+    id = atoi(argv[1]);
     if(!id) {
         fprintf(stderr, "<id_serv> deve ser um inteiro >= 1\n");
         return ERROR;
@@ -42,9 +47,16 @@ int main(int argc, char **argv) {
     sprintf(serv_nome, "Servidor %d", id);
     serv_define_nome(serv_nome);
 
+    define_nome_arq_tabela(argv[3]);
+
     continua_ini();
     
+    status_serv_up(id);
+
     int retorno = serv_escuta(argv[2]);
+
+    reseta_conexoes(id);
+    status_serv_down(id);
     free(serv_nome);
     return retorno;
 }

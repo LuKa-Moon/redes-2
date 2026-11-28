@@ -26,7 +26,9 @@ int main(int argc, char **argv) {
     continua_ini();
 
     while(mantem_ate_SIGINT()) {
+        sleep(rand() % SONO);
         cli_cria_conexao(LOOP_BACK, LB_PORTA_ESCUTA);
+        sleep(rand() % SONO);
 
         if(cli_envia_mensagem(cli_nome, resposta) == ERROR)
             printf("[%s] não recebeu resposta\n", cli_nome);

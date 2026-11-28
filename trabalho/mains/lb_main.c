@@ -8,7 +8,7 @@
 #include "../headers/tabela_servs.h"
 #include "../headers/lb.h"
 
-int (*COMPARACAO_SERVS)(Serv_Dados x1, Serv_Dados x2) = NULL;
+int (*COMPARACAO_SERVS)(Serv_Dados x1, Serv_Dados x2);
 Politica pl;
 int servs_travados;
 
@@ -72,6 +72,7 @@ void serv_trata_mensagem(char *mensagem) {
     do {
         // Escolhendo o servidor com base em COMPARACAO_SERVS
         sd = melhor_serv(COMPARACAO_SERVS);
+        printf("servidor escolhido = %d\n", sd.id);
 
         cli_cria_conexao(sd.host, sd.porta);
         cli_envia_mensagem(mensagem, resposta);
@@ -83,6 +84,7 @@ void serv_trata_mensagem(char *mensagem) {
                 incrementa_RR(get_quant_servs());
             }
             servs_travados++;
+            reseta_conexoes(sd.id);
         }
             
     } while(strlen(resposta) == 0 && mantem_ate_SIGINT() && tem_servidores_ativos());
@@ -119,7 +121,7 @@ int main(int argc, char *argv[]) {
     serv_define_nome("Load Balancer");
 
     // Define o nome do arquivo que será usado pelo tabela servs
-    define_nome_arq_tabela("servs.tab");
+    define_nome_arq_tabela(argv[1]);
 
     // Escolher funcao de comparacao de servs
     // Sugiro passar por argv
@@ -129,6 +131,5 @@ int main(int argc, char *argv[]) {
     else if(pl == LC){
         COMPARACAO_SERVS = seleciona_LC;
     }
-
     return serv_escuta(LB_PORTA_ESCUTA);
 }

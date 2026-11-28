@@ -36,7 +36,7 @@ void registra_opts(int argc, char **argv) {
         default:
             break;
         }
-        opt = getopt(argc, argv, "s:c:r");
+        opt = getopt(argc, argv, "s:c:rt:");
     }
     if(strlen(nome_tab) == 0) {
         printf("necessário passar nome para tabela com -t\n");
@@ -62,13 +62,16 @@ int main(int argc, char **argv) {
     define_nome_arq_tabela(nome_tab);
     gera_tabela_servs(num_servs);
 
-    char **args = malloc(4 * sizeof(char*));
+    char **args = malloc(5 * sizeof(char*));
     args[0] = NOME_EXEC_SERV;
     args[1] = malloc(50);
     args[2] = malloc(50);
-    args[3] = NULL;
+    args[3] = malloc(50);
+    args[4] = NULL;
 
     procs_criados = malloc(sizeof(int) * (num_servs + num_clis + 2));
+
+    strcpy(args[3], nome_tab);
     for(int i = 1; i <= num_servs; i++) {
         Serv_Dados sd = get_dados_serv(i);
         sprintf(args[1], "%d", i);
@@ -76,16 +79,24 @@ int main(int argc, char **argv) {
         cria_processo(NOME_EXEC_SERV, args);
         desaloca_dado(sd);
     }
+    free(args[3]);
+    args[3] = NULL;
+
+    sleep(2);
+
+    strcpy(args[1], nome_tab);
+    if(round_robin)
+        strcpy(args[2], "RR");
+    else
+        strcpy(args[2], "LC");
+    cria_processo(NOME_EXEC_LB, args);
 
     args[0] = NOME_EXEC_LB;
     free(args[2]);
     args[2] = NULL;
 
-    strcpy(args[1], nome_tab);
-    cria_processo(NOME_EXEC_LB, args);
-
     args[0] = NOME_EXEC_CLI;
-
+    sleep(2);
     for(int i = 1; i <= num_clis; i++) {
         sprintf(args[1], "%d", i);
         cria_processo(NOME_EXEC_CLI, args);
@@ -102,6 +113,10 @@ int main(int argc, char **argv) {
             kill(procs_criados[i], SIGINT);
         }
     }
+
+    sleep(1);
+    for(int i = 1; i <= num_servs; i++)
+        reseta_conexoes(i);
     free(args[1]);
     free(args);
     return 0;

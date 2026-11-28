@@ -157,7 +157,7 @@ Serv_Dados get_dados_serv(int id) {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
     if(tabela == NULL){ // verifica se abriu
         fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
-        return;
+        exit(1);
     }
 
     char *linha = le_linha(tabela, id);
@@ -173,7 +173,7 @@ Serv_Dados melhor_serv(int (*comp)(Serv_Dados x1, Serv_Dados x2)) {
     FILE *tabela = fopen(NOME_ARQ_TABELA, "r+");
     if(tabela == NULL){ // verifica se abriu
         fprintf(stderr, "Erro ao abrir tabela de servidores: %s\n", NOME_ARQ_TABELA);
-        return;
+        exit (1);
     }
 
     char *linha = le_linha(tabela, 1);
@@ -185,12 +185,8 @@ Serv_Dados melhor_serv(int (*comp)(Serv_Dados x1, Serv_Dados x2)) {
         acha_linha(tabela, i);
         fread(linha, sizeof(char), TAB_TAM_LINHA, tabela);
         Serv_Dados item = get_dados_serv_interna(linha);
-        if(comp(melhor, item) > 0) {
-            desaloca_dado(melhor);
+        if(comp(melhor, item) > 0)
             melhor = item;
-        }
-        else
-            desaloca_dado(item);
     }
 
     free(linha);
@@ -320,7 +316,7 @@ void gera_tabela_servs(int n) {
     FILE *saida = fopen(NOME_ARQ_TABELA, "w");
     if(saida == NULL){  // verifica se abriu
         fprintf(stderr, "Erro ao abrir o arquivo: %s\n", NOME_ARQ_TABELA);
-        return NOERROR;
+        return;
     }
 
     fprintf(saida, LINHA_HORIZONTAL);
@@ -332,7 +328,7 @@ void gera_tabela_servs(int n) {
     fprintf(saida, LINHA_HORIZONTAL);
 
     for(int i = 1; i <= n; i++) {
-        fprintf(saida, "| %3d | 0000     | 127.0.1.1       | %5d | UP     |\n",
+        fprintf(saida, "| %03d | 0000     | 127.0.1.1       | %05d | DOWN   |\n",
                            i,                             i + 8500);
     }
     

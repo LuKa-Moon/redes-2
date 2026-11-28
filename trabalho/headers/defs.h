@@ -11,6 +11,6 @@
 #define LB_PORTA_ESCUTA "8500" // Porta em que o load balancer fica escutando
 #define LOOP_BACK "127.0.1.1"  // Endereço de loop back
 
-#define SONO 5     // Tempo máximo para dormir entre execuções
+#define SONO 10     // Tempo máximo para dormir entre execuções
 
 #endif
