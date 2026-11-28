@@ -8,8 +8,8 @@
 
 int main(int argc, char **argv) {
     // Verifica uso correto
-    if(argc != 2) {
-        fprintf(stderr, "Uso correto: %s <id_cli>\n", argv[0]);
+    if(argc != 3) {
+        fprintf(stderr, "Uso correto: %s <id_cli> <lb_porta>\n", argv[0]);
         return ERROR;
     }
     int id = atoi(argv[1]);
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
 
     while(mantem_ate_SIGINT()) {
         sleep(rand() % SONO);
-        cli_cria_conexao(LOOP_BACK, LB_PORTA_ESCUTA);
+        cli_cria_conexao(LOOP_BACK, argv[2]);
         sleep(rand() % SONO);
 
         if(cli_envia_mensagem(cli_nome, resposta) == ERROR)

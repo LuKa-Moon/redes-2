@@ -302,7 +302,7 @@ void desaloca_dado(Serv_Dados sd) {
 #define CAMPO_NUM_SERVS    "| Número de servidores:                         "
 #define LINHA_QUANT_CONECT "| Total de conexões:                           0000 |\n"
 #define CABECALHO          "| ID  | Conexões | Host            | Porta | Status |\n"
-void gera_tabela_servs(int n) {
+void gera_tabela_servs(int n, int porta) {
 /*
 -----------------------------------------------------
 | Número de servidores:                         000 |
@@ -329,7 +329,7 @@ void gera_tabela_servs(int n) {
 
     for(int i = 1; i <= n; i++) {
         fprintf(saida, "| %03d | 0000     | 127.0.1.1       | %05d | DOWN   |\n",
-                           i,                             i + 8500);
+                           i,                             i + porta);
     }
     
     fprintf(saida, LINHA_HORIZONTAL);

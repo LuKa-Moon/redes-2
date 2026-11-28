@@ -52,7 +52,7 @@ void decrementa_conexoes(int id);
 void reseta_conexoes(int id);
 
 // Gera uma tabela de servidores de tamanho n
-void gera_tabela_servs(int n);
+void gera_tabela_servs(int n, int porta);
 
 // Desaloca as string de host e porta
 void desaloca_dado(Serv_Dados sd);

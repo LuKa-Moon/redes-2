@@ -101,14 +101,14 @@ void serv_trata_mensagem(char *mensagem) {
 
 int main(int argc, char *argv[]) {
     // Verifica uso correto
-    if(argc != 3) {
-        fprintf(stderr, "Uso correto: %s <nome_tabela_servs> <tipo_politica>\n", argv[0]);
+    if(argc != 4) {
+        fprintf(stderr, "Uso correto: %s <nome_tabela_servs> <tipo_politica> <porta>\n", argv[0]);
         return ERROR;
     } 
 
     pl = define_politica(argv[2]);
     if(pl == PL_INVALIDA) {
-        fprintf(stderr, "Uso correto: %s <nome_tabela_servs> tipo\n", argv[0]);
+        fprintf(stderr, "Uso correto: %s <nome_tabela_servs> tipo <porta>\n", argv[0]);
         return ERROR;
     }
 
@@ -131,5 +131,5 @@ int main(int argc, char *argv[]) {
     else if(pl == LC){
         COMPARACAO_SERVS = seleciona_LC;
     }
-    return serv_escuta(LB_PORTA_ESCUTA);
+    return serv_escuta(argv[3]);
 }

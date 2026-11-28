@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <signal.h>
+#include <time.h>
 #include "../headers/continua.h"
 #include "../headers/tabela_servs.h"
 
@@ -60,7 +61,11 @@ int main(int argc, char **argv) {
 
     registra_opts(argc, argv);
     define_nome_arq_tabela(nome_tab);
-    gera_tabela_servs(num_servs);
+
+    srand(time(NULL));
+    int lb_porta = (rand() % 100) * 10 + 8000;
+
+    gera_tabela_servs(num_servs, lb_porta);
 
     char **args = malloc(5 * sizeof(char*));
     args[0] = NOME_EXEC_SERV;
@@ -79,23 +84,23 @@ int main(int argc, char **argv) {
         cria_processo(NOME_EXEC_SERV, args);
         desaloca_dado(sd);
     }
-    free(args[3]);
-    args[3] = NULL;
 
     sleep(2);
 
+    args[0] = NOME_EXEC_LB;
     strcpy(args[1], nome_tab);
     if(round_robin)
         strcpy(args[2], "RR");
     else
         strcpy(args[2], "LC");
+    sprintf(args[3], "%d", lb_porta);
     cria_processo(NOME_EXEC_LB, args);
 
-    args[0] = NOME_EXEC_LB;
-    free(args[2]);
-    args[2] = NULL;
+    free(args[3]);
+    args[3] = NULL;
 
     args[0] = NOME_EXEC_CLI;
+    sprintf(args[2], "%d", lb_porta);
     sleep(2);
     for(int i = 1; i <= num_clis; i++) {
         sprintf(args[1], "%d", i);
@@ -117,6 +122,8 @@ int main(int argc, char **argv) {
     sleep(1);
     for(int i = 1; i <= num_servs; i++)
         reseta_conexoes(i);
+    
+    free(args[2]);
     free(args[1]);
     free(args);
     return 0;
