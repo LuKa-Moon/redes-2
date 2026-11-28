@@ -78,6 +78,7 @@ void serv_trata_mensagem(char *mensagem) {
         cli_envia_mensagem(mensagem, resposta);
         cli_encerra_conexao();
 
+        // Caso o servidor nao responder
         if(strlen(resposta) == 0) {
             status_serv_down(sd.id);
             if(pl == RR) {
@@ -97,6 +98,8 @@ void serv_trata_mensagem(char *mensagem) {
 
     // achou o servidor
     serv_responde(resposta);   
+
+    free(resposta);
 }
 
 int main(int argc, char *argv[]) {
@@ -105,12 +108,6 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Uso correto: %s <nome_tabela_servs> <tipo_politica> <porta>\n", argv[0]);
         return ERROR;
     } 
-
-    pl = define_politica(argv[2]);
-    if(pl == PL_INVALIDA) {
-        fprintf(stderr, "Uso correto: %s <nome_tabela_servs> tipo <porta>\n", argv[0]);
-        return ERROR;
-    }
 
     // Inicializa variáveis para poder usar
     // mantem_ate_SIGINT, que permite encerrar graciosamente com ^C
@@ -124,7 +121,12 @@ int main(int argc, char *argv[]) {
     define_nome_arq_tabela(argv[1]);
 
     // Escolher funcao de comparacao de servs
-    // Sugiro passar por argv
+    pl = define_politica(argv[2]);
+    if(pl == PL_INVALIDA) {
+        fprintf(stderr, "Uso correto: %s <nome_tabela_servs> tipo <porta>\n", argv[0]);
+        return ERROR;
+    }
+
     if(pl == RR){
         COMPARACAO_SERVS = seleciona_RR;
     }
